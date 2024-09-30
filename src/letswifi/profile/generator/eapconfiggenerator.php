@@ -14,10 +14,10 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
 use InvalidArgumentException;
-use letswifi\profile\auth\AbstractAuth;
-use letswifi\profile\auth\Auth;
 use letswifi\profile\Helpdesk;
 use letswifi\profile\Location;
+use letswifi\profile\auth\AbstractAuth;
+use letswifi\profile\auth\Auth;
 use letswifi\profile\network\HS20Network;
 use letswifi\profile\network\Network;
 use letswifi\profile\network\SSIDNetwork;
@@ -119,7 +119,7 @@ class EapConfigGenerator extends AbstractGenerator
 		if ( $network instanceof SSIDNetwork ) {
 			return static::generateSSIDNetworkXml( $network );
 		}
-		throw new InvalidArgumentException( 'Unsupported network: ' . \get_class( $network ) );
+		throw new InvalidArgumentException( 'Unsupported network: ' . $network::class );
 	}
 
 	private static function generateHS20NetworkXml( HS20Network $network ): string
@@ -145,7 +145,7 @@ class EapConfigGenerator extends AbstractGenerator
 			return $this->generateTlsAuthenticationMethodXml( $authenticationMethod );
 		}
 
-		throw new InvalidArgumentException( 'Unsupported authentication method: ' . \get_class( $authenticationMethod ) );
+		throw new InvalidArgumentException( 'Unsupported authentication method: ' . $authenticationMethod::class );
 	}
 
 	/**
@@ -201,7 +201,7 @@ class EapConfigGenerator extends AbstractGenerator
 			if ( null !== $pkcs12 ) {
 				$result .= ''
 					. "\r\n\t\t\t\t" . '<ClientCertificate format="PKCS12" encoding="base64">' . \base64_encode( $pkcs12->getPKCS12Bytes( $this->passphrase ?: $defaultPassphrase ) ) . '</ClientCertificate>';
-				if ( !$this->passphrase ) {
+				if ( $this->passphrase ) {
 					$result .= ''
 						. "\r\n\t\t\t\t" . '<Passphrase>' . static::e( $defaultPassphrase ) . '</Passphrase>';
 				}
