@@ -38,30 +38,30 @@ class EapConfigGenerator extends AbstractGenerator
 			$expiryString = $expiry->format( 'Y-m-d\\TH:i:s\\Z' );
 
 			$result .= ''
-				. "\r\n\t\t" . '<ValidUntil>' . static::e( $expiryString ) . '</ValidUntil>';
+				. "\r\n\t\t<ValidUntil>" . static::e( $expiryString ) . '</ValidUntil>';
 		}
 		$result .= ''
-			. "\r\n\t\t" . '<AuthenticationMethods>';
+			. "\r\n\t\t<AuthenticationMethods>";
 		foreach ( $this->authenticationMethods as $authentication ) {
 			$result .= $this->generateAuthenticationMethodXml( $authentication );
 		}
 		$result .= ''
-			. "\r\n\t\t" . '</AuthenticationMethods>'
-			. "\r\n\t\t" . '<CredentialApplicability>';
+			. "\r\n\t\t</AuthenticationMethods>"
+			. "\r\n\t\t<CredentialApplicability>";
 		foreach ( $this->profileData->getNetworks() as $network ) {
 			$result .= static::generateNetworkXml( $network );
 		}
 		$result .= ''
-			. "\r\n\t\t" . '</CredentialApplicability>'
-			. "\r\n\t\t" . '<ProviderInfo>'
-			. "\r\n\t\t\t" . '<DisplayName>' . static::e( $this->profileData->getDisplayName() ) . '</DisplayName>';
+			. "\r\n\t\t</CredentialApplicability>"
+			. "\r\n\t\t<ProviderInfo>"
+			. "\r\n\t\t\t<DisplayName>" . static::e( $this->profileData->getDisplayName() ) . '</DisplayName>';
 		if ( null !== $description = $this->profileData->getDescription() ) {
 			$result .= ''
-				. "\r\n\t\t\t" . '<Description>' . static::e( $description ) . '</Description>';
+				. "\r\n\t\t\t<Description>" . static::e( $description ) . '</Description>';
 		}
 		if ( null !== $loc = $this->profileData->getProviderLocation() ) {
 			$result .= ''
-				. "\r\n\t\t\t" . '<ProviderLocation>' . static::generateLocationXml( $loc ) . '</ProviderLocation>';
+				. "\r\n\t\t\t<ProviderLocation>" . static::generateLocationXml( $loc ) . '</ProviderLocation>';
 		}
 		if ( null !== $logo = $this->profileData->getProviderLogo() ) {
 			$result .= ''
@@ -69,15 +69,15 @@ class EapConfigGenerator extends AbstractGenerator
 		}
 		if ( null !== $tos = $this->profileData->getTermsOfUse() ) {
 			$result .= ''
-				. "\r\n\t\t\t" . '<TermsOfUse>' . static::e( $tos ) . '</TermsOfUse>';
+				. "\r\n\t\t\t<TermsOfUse>" . static::e( $tos ) . '</TermsOfUse>';
 		}
 		if ( null !== $helpdesk = $this->profileData->getHelpDesk() ) {
 			$result .= static::generateHelpdeskXml( $helpdesk );
 		}
 		$result .= ''
-			. "\r\n\t\t" . '</ProviderInfo>'
-			. "\r\n\t" . '</EAPIdentityProvider>'
-			. "\r\n" . '</EAPIdentityProviderList>'
+			. "\r\n\t\t</ProviderInfo>"
+			. "\r\n\t</EAPIdentityProvider>"
+			. "\r\n</EAPIdentityProviderList>"
 			. "\r\n";
 
 		return $result;
@@ -119,24 +119,25 @@ class EapConfigGenerator extends AbstractGenerator
 		if ( $network instanceof SSIDNetwork ) {
 			return static::generateSSIDNetworkXml( $network );
 		}
+
 		throw new InvalidArgumentException( 'Unsupported network: ' . $network::class );
 	}
 
 	private static function generateHS20NetworkXml( HS20Network $network ): string
 	{
 		return ''
-			. "\r\n\t\t\t" . '<IEEE80211>'
-			. "\r\n\t\t\t\t" . '<ConsortiumOID>' . static::e( $network->getConsortiumOID() ) . '</ConsortiumOID>'
-			. "\r\n\t\t\t" . '</IEEE80211>';
+			. "\r\n\t\t\t<IEEE80211>"
+			. "\r\n\t\t\t\t<ConsortiumOID>" . static::e( $network->getConsortiumOID() ) . '</ConsortiumOID>'
+			. "\r\n\t\t\t</IEEE80211>";
 	}
 
 	private static function generateSSIDNetworkXml( SSIDNetwork $network ): string
 	{
 		return ''
-			. "\r\n\t\t\t" . '<IEEE80211>'
-			. "\r\n\t\t\t\t" . '<SSID>' . static::e( $network->getSsid() ) . '</SSID>'
-			. "\r\n\t\t\t\t" . '<MinRSNProto>' . static::e( $network->getMinRSNProto() ) . '</MinRSNProto>'
-			. "\r\n\t\t\t" . '</IEEE80211>';
+			. "\r\n\t\t\t<IEEE80211>"
+			. "\r\n\t\t\t\t<SSID>" . static::e( $network->getSsid() ) . '</SSID>'
+			. "\r\n\t\t\t\t<MinRSNProto>" . static::e( $network->getMinRSNProto() ) . '</MinRSNProto>'
+			. "\r\n\t\t\t</IEEE80211>";
 	}
 
 	private function generateAuthenticationMethodXml( Auth $authenticationMethod ): string
@@ -168,27 +169,27 @@ class EapConfigGenerator extends AbstractGenerator
 
 		$result = '';
 		$result .= ''
-			. "\r\n\t\t\t" . '<AuthenticationMethod>'
-			. "\r\n\t\t\t\t" . '<EAPMethod>'
-			. "\r\n\t\t\t\t\t" . '<Type>13</Type>'
-			. "\r\n\t\t\t\t" . '</EAPMethod>'
-			. "\r\n\t\t\t\t" . '<ServerSideCredential>';
+			. "\r\n\t\t\t<AuthenticationMethod>"
+			. "\r\n\t\t\t\t<EAPMethod>"
+			. "\r\n\t\t\t\t\t<Type>13</Type>"
+			. "\r\n\t\t\t\t</EAPMethod>"
+			. "\r\n\t\t\t\t<ServerSideCredential>";
 		foreach ( $authenticationMethod->getServerCACertificates() as $ca ) {
 			$result .= ''
 				. "\r\n\t\t\t\t\t" . '<CA format="X.509" encoding="base64">' . AbstractAuth::pemToBase64Der( $ca->getX509Pem() ) . '</CA>';
 		}
 		foreach ( $authenticationMethod->getServerNames() as $serverName ) {
 			$result .= ''
-				. "\r\n\t\t\t\t\t" . '<ServerID>' . static::e( $serverName ) . '</ServerID>';
+				. "\r\n\t\t\t\t\t<ServerID>" . static::e( $serverName ) . '</ServerID>';
 		}
 		$result .= ''
-			. "\r\n\t\t\t\t" . '</ServerSideCredential>';
+			. "\r\n\t\t\t\t</ServerSideCredential>";
 		if ( null === $authenticationMethod->getPKCS12() ) {
 			$result .= ''
-				. "\r\n\t\t\t\t" . '<ClientSideCredential/>';
+				. "\r\n\t\t\t\t<ClientSideCredential/>";
 		} else {
 			$result .= ''
-				. "\r\n\t\t\t\t" . '<ClientSideCredential>';
+				. "\r\n\t\t\t\t<ClientSideCredential>";
 			if ( null !== $identity ) {
 				// https://github.com/GEANT/CAT/blob/v2.0.3/devices/xml/eap-metadata.xsd
 				// The schema specifies <OuterIdentity>
@@ -196,21 +197,21 @@ class EapConfigGenerator extends AbstractGenerator
 				// Expired draft specifices <AnonymousIdentity>
 				// cat.eduroam.org uses <OuterIdentity>, so we do too
 				$result .= ''
-					. "\r\n\t\t\t\t\t" . '<OuterIdentity>' . static::e( $identity ) . '</OuterIdentity>';
+					. "\r\n\t\t\t\t\t<OuterIdentity>" . static::e( $identity ) . '</OuterIdentity>';
 			}
 			if ( null !== $pkcs12 ) {
 				$result .= ''
 					. "\r\n\t\t\t\t" . '<ClientCertificate format="PKCS12" encoding="base64">' . \base64_encode( $pkcs12->getPKCS12Bytes( $this->passphrase ?: $defaultPassphrase ) ) . '</ClientCertificate>';
 				if ( $this->passphrase ) {
 					$result .= ''
-						. "\r\n\t\t\t\t" . '<Passphrase>' . static::e( $defaultPassphrase ) . '</Passphrase>';
+						. "\r\n\t\t\t\t<Passphrase>" . static::e( $defaultPassphrase ) . '</Passphrase>';
 				}
 				$result .= ''
-					. "\r\n\t\t\t\t" . '</ClientSideCredential>';
+					. "\r\n\t\t\t\t</ClientSideCredential>";
 			}
 		}
 		$result .= ''
-				. "\r\n\t\t\t" . '</AuthenticationMethod>';
+				. "\r\n\t\t\t</AuthenticationMethod>";
 
 		return $result;
 	}
